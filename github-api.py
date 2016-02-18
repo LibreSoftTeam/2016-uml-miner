@@ -9,11 +9,12 @@ import os
 ProjectRecord = namedtuple('ProjectRecord', 'id, url, owner_id, name, descriptor, language, created_at, forked_from, deleted, updated_at')
 
 github_api = "https://api.github.com/repos/"
-github_key = "client_id=" # Your GitHub API client id here!
 
-os.mkdir("master")
-os.mkdir("default")
-os.mkdir("trees")
+github_key = "access_token=" # Your GitHub API client id here!
+
+#os.mkdir("master")
+#os.mkdir("default")
+#os.mkdir("trees")
 
 def lookup(dic, key, *keys):
     """
@@ -36,7 +37,7 @@ def get_json(repo, directory, url_append = ""):
 
     url_append offers the possibility to append something to the call
     """
-    url = repo.url
+    url = repo.url + url_append
     if "?" in url_append:
         url = url + "&" + github_key
     else:
@@ -66,7 +67,7 @@ def read_json(repo, directory, lookup_list):
         return 0
 
 alreadyList = os.listdir("master")
-with open(".csv", "r") as csvfile: # CSV file name here!
+with open("trial.csv", "r") as csvfile: # CSV file name here!
     for contents in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
         contents[0] = str(int(contents[0]))
         contents[2] = str(int(contents[2]))
