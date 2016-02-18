@@ -1,26 +1,19 @@
 #!/usr/bin/python
-import MySQLdb
+import csv
+from collections import namedtuple
 import urllib
 import json
 import time
 import os
 
-db = MySQLdb.connect("localhost", "operator", "operator", "ghtorrent")
-cursor = db.cursor()
-query = "SELECT users.login, projects.name FROM projects, users WHERE projects.forked_from IS NULL AND projects.owner_id=users.id;"
-cursor.execute(query)
-# repo_list is a list of (username, repository_name) tuples
-repo_list = cursor.fetchall()
-db.close()
-
+ProjectRecord = namedtuple('ProjectRecord', 'id, url, owner_id, name, descriptor, language, created_at, forked_from, deleted, updated_at')
 
 github_api = "https://api.github.com/repos/"
-github_api = "https://192.30.252.137/repos/"
 github_key = "client_id=" # Your GitHub API client id here!
 
-#os.mkdir("master")
-#os.mkdir("default")
-#os.mkdir("trees")
+os.mkdir("master")
+os.mkdir("default")
+os.mkdir("trees")
 
 def lookup(dic, key, *keys):
     """
@@ -43,7 +36,7 @@ def get_json(repo, directory, url_append = ""):
 
     url_append offers the possibility to append something to the call
     """
-    url = github_api + repo[0] + "/" + repo[1] + url_append
+    url = repo.url
     if "?" in url_append:
         url = url + "&" + github_key
     else:
@@ -51,7 +44,7 @@ def get_json(repo, directory, url_append = ""):
 
     print "Retrieve: ", url
     try:
-        urllib.urlretrieve(url, directory + "/" + repo[0] + ":" + repo[1] + ".json")
+        urllib.urlretrieve(url, directory + "/" + repo.owner_id + ":" + repo.id + ".json")
     except IOError:
         print "IOERROR: " + url
         return 0
@@ -64,7 +57,7 @@ def read_json(repo, directory, lookup_list):
     it looks up for a given value in the JSON (given as a list)
     and returns its value
     """
-    with open(directory + "/" + repo[0] + ":" + repo[1] + ".json") as data_file:
+    with open(directory + "/" + repo.owner_id + ":" + repo.id + ".json") as data_file:
         data = json.load(data_file)
 
     try:
@@ -73,33 +66,37 @@ def read_json(repo, directory, lookup_list):
         return 0
 
 alreadyList = os.listdir("master")
+with open(".csv", "r") as csvfile: # CSV file name here!
+    for contents in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
+        contents[0] = str(int(contents[0]))
+        contents[2] = str(int(contents[2]))
+        repo = ProjectRecord(*contents)
 
-for repo in repo_list:
-    if repo[0] + ":" + repo[1]+ ".json" in alreadyList:
-        continue
-    print
-    if not get_json(repo, "master", "/branches/master"):
-        continue
-    sha_hash = read_json(repo, "master", ["commit", "commit", "tree", "sha"])
-
-    if not sha_hash:
-        print "Master branch not found: " + repo[0] + " " + repo[1]
-        if not get_json(repo, "default"):
+        if repo.owner_id + ":" + repo.id + ".json" in alreadyList:
             continue
-        default = read_json(repo, "default", ["default_branch"])
-
-        if not default:
-            print "No default branch found: " + repo[0] + " " + repo[1]
-            time.sleep(1.40)
-            continue
-        if not get_json(repo, "master", "/branches/" + default):
+        print
+        if not get_json(repo, "master", "/branches/master"):
             continue
         sha_hash = read_json(repo, "master", ["commit", "commit", "tree", "sha"])
 
         if not sha_hash:
-            print "Default branch not found: " + repo[0] + " " + repo[1]
-            time.sleep(2.10)
+            print "Master branch not found: " + repo.url
+            if not get_json(repo, "default"):
+                continue
+            default = read_json(repo, "default", ["default_branch"])
+
+            if not default:
+                print "No default branch found: " + repo.url
+                time.sleep(1.40)
+                continue
+            if not get_json(repo, "master", "/branches/" + default):
+                continue
+            sha_hash = read_json(repo, "master", ["commit", "commit", "tree", "sha"])
+
+            if not sha_hash:
+                print "Default branch not found: " + repo.url
+                time.sleep(2.10)
+                continue
+        if not get_json(repo, "trees", "/git/trees/" + sha_hash + "?recursive=1"):
             continue
-    if not get_json(repo, "trees", "/git/trees/" + sha_hash + "?recursive=1"):
-        continue
-    time.sleep(1.40)
+        time.sleep(1.40)
