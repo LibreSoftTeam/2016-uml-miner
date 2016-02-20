@@ -6,8 +6,8 @@ repo_jsons = os.listdir("trees")
 repo_list = []
 
 for jsonfile in repo_jsons:
-    (username, repo) = jsonfile.split(":")
-    repo_list.append((username, repo[:-5]))
+    (username_id, repo_id) = jsonfile.split(":")
+    repo_list.append((username_id, repo_id[:-5]))
 
 # Common extensions for UML files
 uml_extensions = ["uml", "xmi", "uxf", "xdr"]
@@ -63,7 +63,7 @@ def tree(path):
         return ""
 
 for repo in repo_list:
-    with open("trees/" + repo[0] + ":" + repo[1] + ".json") as data_file:    
+    with open("trees/" + repo[0] + ":" + repo[1] + ".json") as data_file:
         data = json.load(data_file)
 
     try:
@@ -71,7 +71,7 @@ for repo in repo_list:
     except KeyError:
         print "KeyError: ", repo[0], repo[1]
         continue
-        
+
     for file_dict in tree:
         if file_dict["type"] != "tree":
             if interesting(file_dict["path"]):
