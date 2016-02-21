@@ -1,9 +1,11 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import json
 import os
 
 repo_jsons = os.listdir("trees")
 repo_list = []
+errors_file = open('errors.log', 'w')
 
 for jsonfile in repo_jsons:
     (username_id, repo_id) = jsonfile.split(":")
@@ -65,17 +67,23 @@ def tree(path):
 for repo in repo_list:
     with open("trees/" + repo[0] + ":" + repo[1] + ".json") as data_file:
         data = json.load(data_file)
-
     try:
         tree = data["tree"]
     except KeyError:
-        print "KeyError: ", repo[0], repo[1]
+        errors_file.write("KeyError: " + repo[0] + ":" + repo[1] + ".json\r\n")
         continue
 
     for file_dict in tree:
         if file_dict["type"] != "tree":
-            if interesting(file_dict["path"]):
-                print file_dict["path"], file_dict["url"]
-            else:
-                pass
-#                print "Nooooo", file_dict["path"]
+            try:
+                if ("path" in file_dict) and ("url" in file_dict):
+                    if interesting(file_dict["path"]):
+                        print file_dict["path"], file_dict["url"]
+                    else:
+                        pass
+    #                print "Nooooo", file_dict["path"]
+            except UnicodeEncodeError:
+                errors_file.write("UnicodeEncodeError with file: trees/" + repo[0] + ":" + repo[1] + ".json\r\n")
+
+
+errors_file.close()
