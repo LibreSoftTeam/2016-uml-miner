@@ -14,6 +14,7 @@ from collections import namedtuple
 
 if len(sys.argv) != 2:
     print "Usage: $python hits2urls.py <projects csv>"
+    raise SystemExit
 
 start = "https://raw.githubusercontent.com/"
 init_path = os.path.abspath(os.curdir)
@@ -53,15 +54,18 @@ for line in linelist:
         continue
 #    print "*", line[:-1]
     try:
-        print line
         path, blob = line[:-1].split(" https://api.github.com/")
     except ValueError:
         continue
     blobList = blob.split('/')
     username = blobList[1]
     repo = blobList[2]
-    username_id = str(owners_dict[username])
-    repo_id = str(projects_dict[repo])
+    if (username in owners_dict) and (repo in projects_dict):
+        username_id = str(owners_dict[username])
+        repo_id = str(projects_dict[repo])
+    else:
+        username_id = username
+        repo_id = repo
     branch = obtain_branch(username_id, repo_id)
     if not branch:
         continue
