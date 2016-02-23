@@ -6,15 +6,17 @@ import json
 import time
 import os
 
+# TODO Get csv file from command line as an argument
+
 ProjectRecord = namedtuple('ProjectRecord', 'id, url, owner_id, name, descriptor, language, created_at, forked_from, deleted, updated_at')
 
 github_api = "https://api.github.com/repos/"
 
-github_key = "access_token=" # Your GitHub API client id here!
+github_key = "" # Your GitHub API client id here!
 
-#os.mkdir("master")
-#os.mkdir("default")
-#os.mkdir("trees")
+os.mkdir("master")
+os.mkdir("default")
+os.mkdir("trees")
 
 def lookup(dic, key, *keys):
     """
@@ -59,7 +61,12 @@ def read_json(repo, directory, lookup_list):
     and returns its value
     """
     with open(directory + "/" + repo.owner_id + ":" + repo.id + ".json") as data_file:
-        data = json.load(data_file)
+        try:
+            data = json.load(data_file)
+        except ValueError:
+            message = "Error with file: " + directory + "/" + repo.owner_id
+            message += ":" + repo.id + ".json"
+            print message
 
     try:
         return lookup(data, *lookup_list)
@@ -67,7 +74,7 @@ def read_json(repo, directory, lookup_list):
         return 0
 
 alreadyList = os.listdir("master")
-with open("trial.csv", "r") as csvfile: # CSV file name here!
+with open("filename.csv", "r") as csvfile: # CSV file name here!
     for contents in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
         contents[0] = str(int(contents[0]))
         contents[2] = str(int(contents[2]))
@@ -101,3 +108,5 @@ with open("trial.csv", "r") as csvfile: # CSV file name here!
         if not get_json(repo, "trees", "/git/trees/" + sha_hash + "?recursive=1"):
             continue
         time.sleep(1.40)
+
+print "End of program"
