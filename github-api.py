@@ -1,13 +1,15 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import csv
 from collections import namedtuple
 import urllib
 import json
 import time
 import os
+import sys
 
-# TODO Get csv file from command line as an argument
-
+pathname = os.path.abspath(os.curdir).split("/")[-1]
+filename = pathname + ".csv"
 ProjectRecord = namedtuple('ProjectRecord', 'id, url, owner_id, name, descriptor, language, created_at, forked_from, deleted, updated_at')
 
 github_api = "https://api.github.com/repos/"
@@ -44,8 +46,11 @@ def get_json(repo, directory, url_append = ""):
         url = url + "&" + github_key
     else:
         url = url + "?" + github_key
-
-    print "Retrieve: ", url
+    try:
+        print "Retrieve: ", url
+    except UnicodeEncodeError:
+        print "UnicodeEncodeError: " + str(repo) + directory
+        return 0
     try:
         urllib.urlretrieve(url, directory + "/" + repo.owner_id + ":" + repo.id + ".json")
     except IOError:
@@ -74,7 +79,7 @@ def read_json(repo, directory, lookup_list):
         return 0
 
 alreadyList = os.listdir("master")
-with open("filename.csv", "r") as csvfile: # CSV file name here!
+with open(filename, "r") as csvfile: # CSV file name here!
     for contents in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
         contents[0] = str(int(contents[0]))
         contents[2] = str(int(contents[2]))
