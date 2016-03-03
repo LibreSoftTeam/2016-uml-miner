@@ -12,15 +12,13 @@ import csv
 import sys
 from collections import namedtuple
 
-if len(sys.argv) != 2:
-    print "Usage: $python hits2urls.py <projects csv>"
-    raise SystemExit
 
 start = "https://raw.githubusercontent.com/"
 init_path = os.path.abspath(os.curdir)
 ProjectRecord = namedtuple('ProjectRecord', 'id, url, owner_id, name, descriptor, language, created_at, forked_from, deleted, updated_at')
 owners_dict = {}
 projects_dict = {}
+csv_name =  os.path.abspath(os.curdir).split("/")[-1] + ".csv"
 
 def obtain_branch(username, repo):
     """
@@ -37,7 +35,7 @@ def obtain_branch(username, repo):
 
     return "master"
 
-with open(sys.argv[1], "r") as csvfile: # CSV file name here!
+with open(csv_name, "r") as csvfile: # CSV file name here!
     for contents in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
         contents[0] = int(contents[0])
         contents[2] = int(contents[2])
