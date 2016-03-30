@@ -66,7 +66,11 @@ def tree(path):
 
 for repo in repo_list:
     with open("trees/" + repo[0] + ":" + repo[1] + ".json") as data_file:
-        data = json.load(data_file)
+        try:
+            data = json.load(data_file)
+        except ValueError:
+            errors_file.write("ValueError: " + repo[0] + ":" + repo[1] + ".json\r\n")
+            continue
     try:
         tree = data["tree"]
     except KeyError:
