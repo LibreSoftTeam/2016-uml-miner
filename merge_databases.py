@@ -14,7 +14,7 @@ def fix_string(parameter):
     return result
 
 
-main_db = 'chunk1_uml_xmi'
+main_db = 'uml1'
 
 # Connect to the database
 main_connection = pymysql.connect(
@@ -27,15 +27,19 @@ main_connection = pymysql.connect(
 
 main_cursor = main_connection.cursor()
 
-databases = ['chunk1_images', 'chunk2_uml_xmi', 'chunk2_images', 'chunk3_uml_xmi', 'chunk3_images',
-            'chunk4_uml_xmi', 'chunk4_images']
+databases = ['uml2', 'uml3', 'uml4', 'uml5', 'uml6', 'uml7', 'uml8']
 
 for db in databases:
 
-    dicc_people = {} # dicc[(old_id, chunk)] = new_id
-    dicc_repos = {} # dicc[(old_id, chunk)] = new_id
-    dicc_files = {} # dicc[(old_id, chunk)] = new_id
-    dicc_commits = {} # dicc[(old_id, chunk)] = new_id
+    # dicc[old_id] = new_id
+    dicc_people = {}
+    dicc_repos = {}
+    dicc_files = {}
+    dicc_commits = {}
+    dicc_file_links = {}
+    dicc_parent_id = {}
+    dicc_actions = {}
+    dicc_actions_file_names = {}
 
     connection = pymysql.connect(
                     host='localhost',
@@ -161,7 +165,7 @@ for db in databases:
 
     """
     FILE LINKS
-
+    """
 
     sql = 'SELECT max(id) AS max FROM file_links;'
     #        print(sql)
@@ -169,7 +173,113 @@ for db in databases:
     result = main_cursor.fetchone()
     max_id = result['max']
 
-    sql = 'SELECT id, parent_id, ile_name, repository_id FROM files;'
+    sql = 'SELECT id, parent_id, file_id, commit_id, file_path FROM file_links;'
     cursor.execute(sql)
     result = cursor.fetchall()
+
+    for line in result:
+        new_id = line['id'] + int(max_id)
+        dicc_file_links[(line['id'])] = new_id
+        new_file_id = dicc_files[(line['file_id'])]
+        new_commit_id = dicc_commits[(line['commit_id'])]
+
+        old_parent_id = int(line['parent_id'])
+        if old_parent_id == -1:
+            new_parent_id = -1
+        else:
+            new_parent_id = dicc_files[old_parent_id]
+
+        sql = "INSERT INTO file_links (id, parent_id, file_id, commit_id,"
+        sql += "file_path) VALUES ("
+        sql += str(new_id) + ", " + str(new_parent_id) + ", " + str(new_file_id)
+        sql += ", " + str(new_commit_id) + ", '" + fix_string(line['file_path']) + "');"
+        try:
+            main_cursor.execute(sql)
+        except pymysql.err.ProgrammingError:
+            print("Error: ", sql)
+
+    print("file_links table... done")
+
     """
+    ACTIONS
+    """
+
+    sql = 'SELECT max(id) AS max FROM actions;'
+    #        print(sql)
+    main_cursor.execute(sql)
+    result = main_cursor.fetchone()
+    max_id = int(result['max'])
+
+    sql = 'SELECT id, type, file_id, commit_id, branch_id FROM actions;'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+
+    for line in result:
+        new_id = line['id'] + int(max_id)
+        dicc_actions[(line['id'])] = new_id
+        new_file_id = dicc_files[(line['file_id'])]
+        new_commit_id = dicc_commits[(line['commit_id'])]
+
+        sql = "INSERT INTO actions (id, type, file_id, commit_id, branch_id) VALUES ("
+        sql += str(new_id) + ", '" + fix_string(line['type']) + "', " + str(new_file_id)
+        sql += ", '" + str(new_commit_id) + ", '" + str(line['branch_id']) + ");"
+        try:
+            main_cursor.execute(sql)
+        except pymysql.err.ProgrammingError:
+            print("Error: ", sql)
+
+    print("actions table... done")
+
+    """
+    ACTION_FILES
+    """
+
+    sql = 'SELECT file_id, action_id, action_type, commit_id FROM action_files;'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+
+    for line in result:
+        new_file_id = dicc_files[(line['file_id'])]
+        new_action_id = dicc_actions[line('action_id')]
+        new_commit_id = dicc_commits[(line['commit_id'])]
+
+        sql = "INSERT INTO action_files (file_id, action_id, action_type, commit_id) VALUES ("
+        sql += str(new_file_id) + ", " + str(new_action_id) + ", '"
+        sql += fix_string(line['action_type']) + "', " + str(new_commit_id) + ");"
+        try:
+            main_cursor.execute(sql)
+        except pymysql.err.ProgrammingError:
+            print("Error: ", sql)
+
+    print("action_files table... done")
+
+    """
+    ACTION_FILE_NAMES
+    """
+
+    sql = 'SELECT max(id) AS max FROM actions;'
+    #        print(sql)
+    main_cursor.execute(sql)
+    result = main_cursor.fetchone()
+    max_id = int(result['max'])
+
+    sql = 'SELECT id, type, file_id, new_file_name, commit_id FROM action_file_names;'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+
+    for line in result:
+        new_id = line['id'] + int(max_id)
+        dicc_actions_file_names[(line['id'])] = new_id
+        new_file_id = dicc_files[(line['file_id'])]
+        new_commit_id = dicc_commits[(line['commit_id'])]
+
+        sql = "INSERT INTO action_file_names (id, type, file_id, new_file_name, commit_id) VALUES ("
+        sql += str(new_id) + ", '" + fix_string(line['type']) + "', "
+        sql += str(new_file_id) + ", '" + fix_string(line['new_file_name'])
+        sql += "', " + str(new_commit_id) + ");"
+        try:
+            main_cursor.execute(sql)
+        except pymysql.err.ProgrammingError:
+            print("Error: ", sql)
+
+    print("action_file_names table... done")
