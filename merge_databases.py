@@ -14,7 +14,7 @@ def fix_string(parameter):
     return result
 
 
-main_db = 'chunk1_uml_xmi'
+main_db = 'uml1'
 
 # Connect to the database
 main_connection = pymysql.connect(
@@ -244,7 +244,7 @@ for db in databases:
         new_commit_id = dicc_commits[line['commit_id']]
 
         sql = "INSERT INTO action_files (file_id, action_id, action_type, commit_id) VALUES ("
-        sql += str(new_file_id) + ", " + str(new_action_id) + ", '"
+        sql += str(new_file_id) + ", " + str(line['action_id']) + ", '"
         sql += fix_string(line['action_type']) + "', " + str(new_commit_id) + ");"
         try:
             main_cursor.execute(sql)
@@ -257,7 +257,7 @@ for db in databases:
     ACTION_FILE_NAMES
     """
 
-    sql = 'SELECT max(id) AS max FROM actions;'
+    sql = 'SELECT max(id) AS max FROM action_file_names;'
     #        print(sql)
     main_cursor.execute(sql)
     result = main_cursor.fetchone()
