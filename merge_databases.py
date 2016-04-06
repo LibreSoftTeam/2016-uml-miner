@@ -14,7 +14,7 @@ def fix_string(parameter):
     return result
 
 
-main_db = 'uml1'
+main_db = 'chunk1_uml_xmi'
 
 # Connect to the database
 main_connection = pymysql.connect(
@@ -67,7 +67,7 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_people[(line['id'])] = new_id
+        dicc_people[line['id']] = new_id
         sql = "INSERT INTO people (id, name, email) VALUES (" + str(new_id) + ", '"
         sql += fix_string(line['name']) + "', '" + fix_string(line['email']) + "');"
         main_cursor.execute(sql)
@@ -91,7 +91,7 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_repos[(line['id'])] = new_id
+        dicc_repos[line['id']] = new_id
         sql = "INSERT INTO repositories (id, uri, name, type) VALUES ("
         sql += str(new_id) + ", '" + line['uri'] + "', '" + fix_string(line['name'])
         sql += "', '" + line['type'] + "');"
@@ -115,8 +115,8 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_files[(line['id'])] = new_id
-        new_repo_id = dicc_repos[(line['repository_id'])]
+        dicc_files[line['id']] = new_id
+        new_repo_id = dicc_repos[line['repository_id']]
         sql = "INSERT INTO files (id, file_name, repository_id) VALUES ("
         sql += str(new_id) + ", '" + fix_string(line['file_name']) + "', " + str(new_repo_id)
         sql += ");"
@@ -145,10 +145,10 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_commits[(line['id'])] = new_id
-        new_committer_id = dicc_people[(line['committer_id'])]
-        new_author_id = dicc_people[(line['author_id'])]
-        new_repo_id = dicc_repos[(line['repository_id'])]
+        dicc_commits[line['id']] = new_id
+        new_committer_id = dicc_people[line['committer_id']]
+        new_author_id = dicc_people[line['author_id']]
+        new_repo_id = dicc_repos[line['repository_id']]
 
         sql = "INSERT INTO scmlog (id, rev, committer_id, author_id, date, "
         sql += "date_tz, author_date, author_date_tz, message, composed_rev, "
@@ -179,9 +179,9 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_file_links[(line['id'])] = new_id
-        new_file_id = dicc_files[(line['file_id'])]
-        new_commit_id = dicc_commits[(line['commit_id'])]
+        dicc_file_links[line['id']] = new_id
+        new_file_id = dicc_files[line['file_id']]
+        new_commit_id = dicc_commits[line['commit_id']]
 
         old_parent_id = int(line['parent_id'])
         if old_parent_id == -1:
@@ -216,9 +216,9 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_actions[(line['id'])] = new_id
-        new_file_id = dicc_files[(line['file_id'])]
-        new_commit_id = dicc_commits[(line['commit_id'])]
+        dicc_actions[line['id']] = new_id
+        new_file_id = dicc_files[line['file_id']]
+        new_commit_id = dicc_commits[line['commit_id']]
 
         sql = "INSERT INTO actions (id, type, file_id, commit_id, branch_id) VALUES ("
         sql += str(new_id) + ", '" + fix_string(line['type']) + "', " + str(new_file_id)
@@ -239,9 +239,9 @@ for db in databases:
     result = cursor.fetchall()
 
     for line in result:
-        new_file_id = dicc_files[(line['file_id'])]
-        new_action_id = dicc_actions[line('action_id')]
-        new_commit_id = dicc_commits[(line['commit_id'])]
+        new_file_id = dicc_files[line['file_id']]
+        #new_action_id = dicc_actions[line['action_id']]
+        new_commit_id = dicc_commits[line['commit_id']]
 
         sql = "INSERT INTO action_files (file_id, action_id, action_type, commit_id) VALUES ("
         sql += str(new_file_id) + ", " + str(new_action_id) + ", '"
@@ -269,9 +269,9 @@ for db in databases:
 
     for line in result:
         new_id = line['id'] + int(max_id)
-        dicc_actions_file_names[(line['id'])] = new_id
-        new_file_id = dicc_files[(line['file_id'])]
-        new_commit_id = dicc_commits[(line['commit_id'])]
+        dicc_actions_file_names[line['id']] = new_id
+        new_file_id = dicc_files[line['file_id']]
+        new_commit_id = dicc_commits[line['commit_id']]
 
         sql = "INSERT INTO action_file_names (id, type, file_id, new_file_name, commit_id) VALUES ("
         sql += str(new_id) + ", '" + fix_string(line['type']) + "', "
