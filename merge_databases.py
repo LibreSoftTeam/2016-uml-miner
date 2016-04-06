@@ -27,8 +27,7 @@ main_connection = pymysql.connect(
 
 main_cursor = main_connection.cursor()
 
-databases = ['uml2']
-# , 'chunk2_uml_xmi', 'chunk2_images', 'chunk3_uml_xmi', 'chunk3_images','chunk4_uml_xmi', 'chunk4_images'
+databases = ['uml2', 'uml3', 'uml4', 'uml5', 'uml6', 'uml7', 'uml8']
 
 for db in databases:
 
@@ -200,8 +199,6 @@ for db in databases:
             print("Error: ", sql)
 
     print("file_links table... done")
-
-    raise SystemExit
 
     """
     ACTIONS
