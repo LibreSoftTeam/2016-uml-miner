@@ -222,7 +222,7 @@ for db in databases:
 
         sql = "INSERT INTO actions (id, type, file_id, commit_id, branch_id) VALUES ("
         sql += str(new_id) + ", '" + fix_string(line['type']) + "', " + str(new_file_id)
-        sql += ", " + str(new_commit_id) + ", '" + str(line['branch_id']) + ");"
+        sql += ", " + str(new_commit_id) + ", " + str(line['branch_id']) + ");"
         try:
             main_cursor.execute(sql)
         except pymysql.err.ProgrammingError:
