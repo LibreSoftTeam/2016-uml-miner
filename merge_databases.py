@@ -27,7 +27,8 @@ main_connection = pymysql.connect(
 
 main_cursor = main_connection.cursor()
 
-databases = ['uml2', 'uml3', 'uml4', 'uml5', 'uml6', 'uml7', 'uml8']
+databases = ['uml2']
+# , 'chunk2_uml_xmi', 'chunk2_images', 'chunk3_uml_xmi', 'chunk3_images','chunk4_uml_xmi', 'chunk4_images'
 
 for db in databases:
 
@@ -200,6 +201,8 @@ for db in databases:
 
     print("file_links table... done")
 
+    raise SystemExit
+
     """
     ACTIONS
     """
@@ -222,7 +225,7 @@ for db in databases:
 
         sql = "INSERT INTO actions (id, type, file_id, commit_id, branch_id) VALUES ("
         sql += str(new_id) + ", '" + fix_string(line['type']) + "', " + str(new_file_id)
-        sql += ", '" + str(new_commit_id) + ", '" + str(line['branch_id']) + ");"
+        sql += ", " + str(new_commit_id) + ", '" + str(line['branch_id']) + ");"
         try:
             main_cursor.execute(sql)
         except pymysql.err.ProgrammingError:
