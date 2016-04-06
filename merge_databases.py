@@ -51,9 +51,9 @@ for db in databases:
 
     cursor = connection.cursor()
 
-    """
-    PEOPLE
-    """
+
+    # PEOPLE
+
 
     sql = 'SELECT max(id) AS max FROM people;'
     #        print(sql)
@@ -75,9 +75,7 @@ for db in databases:
 
     print("people table... done")
 
-    """
-    REPOSITORIES
-    """
+    #REPOSITORIES
 
     sql = 'SELECT max(id) AS max FROM repositories;'
     #        print(sql)
@@ -99,9 +97,7 @@ for db in databases:
 
     print("repositories table... done")
 
-    """
-    FILES
-    """
+    # FILES
 
     sql = 'SELECT max(id) AS max FROM files;'
     #        print(sql)
@@ -128,9 +124,7 @@ for db in databases:
     print("files table... done")
 
 
-    """
-    SCMLOG
-    """
+    # SCMLOG
 
     sql = 'SELECT max(id) AS max FROM scmlog;'
     #        print(sql)
@@ -163,9 +157,7 @@ for db in databases:
     print("scmlog table... done")
 
 
-    """
-    FILE LINKS
-    """
+    # FILE_LINKS
 
     sql = 'SELECT max(id) AS max FROM file_links;'
     #        print(sql)
@@ -200,9 +192,7 @@ for db in databases:
 
     print("file_links table... done")
 
-    """
-    ACTIONS
-    """
+    # ACTIONS
 
     sql = 'SELECT max(id) AS max FROM actions;'
     #        print(sql)
@@ -229,57 +219,3 @@ for db in databases:
             print("Error: ", sql)
 
     print("actions table... done")
-
-    """
-    ACTION_FILES
-    """
-
-    sql = 'SELECT file_id, action_id, action_type, commit_id FROM action_files;'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-
-    for line in result:
-        new_file_id = dicc_files[line['file_id']]
-        #new_action_id = dicc_actions[line['action_id']]
-        new_commit_id = dicc_commits[line['commit_id']]
-
-        sql = "INSERT INTO action_files (file_id, action_id, action_type, commit_id) VALUES ("
-        sql += str(new_file_id) + ", " + str(line['action_id']) + ", '"
-        sql += fix_string(line['action_type']) + "', " + str(new_commit_id) + ");"
-        try:
-            main_cursor.execute(sql)
-        except pymysql.err.ProgrammingError:
-            print("Error: ", sql)
-
-    print("action_files table... done")
-
-    """
-    ACTION_FILE_NAMES
-    """
-
-    sql = 'SELECT max(id) AS max FROM action_file_names;'
-    #        print(sql)
-    main_cursor.execute(sql)
-    result = main_cursor.fetchone()
-    max_id = int(result['max'])
-
-    sql = 'SELECT id, type, file_id, new_file_name, commit_id FROM action_file_names;'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-
-    for line in result:
-        new_id = line['id'] + int(max_id)
-        dicc_actions_file_names[line['id']] = new_id
-        new_file_id = dicc_files[line['file_id']]
-        new_commit_id = dicc_commits[line['commit_id']]
-
-        sql = "INSERT INTO action_file_names (id, type, file_id, new_file_name, commit_id) VALUES ("
-        sql += str(new_id) + ", '" + fix_string(line['type']) + "', "
-        sql += str(new_file_id) + ", '" + fix_string(line['new_file_name'])
-        sql += "', " + str(new_commit_id) + ");"
-        try:
-            main_cursor.execute(sql)
-        except pymysql.err.ProgrammingError:
-            print("Error: ", sql)
-
-    print("action_file_names table... done")
