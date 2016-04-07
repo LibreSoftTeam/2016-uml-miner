@@ -13,7 +13,7 @@ connection = pymysql.connect(
 host='localhost',
 user='operator',
 passwd='operator',
-db='chunk4_images',
+db='uml1',
 charset='utf8mb4',
 cursorclass=pymysql.cursors.DictCursor)
 
@@ -195,7 +195,7 @@ l, m, n, o = contribstats('SELECT repository_id AS repo_id, author_id, count(*) 
 
 # ,...,  "major_contrib_uml", "number_contribs_uml", "commits_major_contrib_uml", "commits_total_uml",
 # We want the modifications (and author_id) for all changes to UML files
-p, q, r, s = umlstats('SELECT uml_files.repository_id AS repo_id, file_id, type, author_id FROM actions_file_names, uml_files, scmlog WHERE actions_file_names.file_id=uml_files.id AND scmlog.id=actions_file_names.commit_id ORDER BY uml_files.repository_id')
+p, q, r, s = umlstats('SELECT uml_files.repository_id AS repo_id, file_id, type, author_id FROM actions, uml_files, scmlog WHERE actions.file_id=uml_files.id AND scmlog.id=actions.commit_id ORDER BY uml_files.repository_id')
 
 # Send all to a CSV file
 
