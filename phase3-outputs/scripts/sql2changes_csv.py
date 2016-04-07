@@ -11,7 +11,7 @@ connection = pymysql.connect(
 host='localhost',
 user='operator',
 passwd='operator',
-db='chunk3_images',
+db='uml1',
 charset='utf8mb4',
 cursorclass=pymysql.cursors.DictCursor)
 
@@ -35,7 +35,7 @@ while 1:
 
 #
 
-sql = "SELECT uml_files.repository_id AS repo_id, file_id, type, author_id, date, commit_id FROM actions_file_names, uml_files, scmlog WHERE actions_file_names.file_id=uml_files.id AND scmlog.id=actions_file_names.commit_id AND (type='A' or type='M') ORDER BY uml_files.repository_id, file_id, date"
+sql = "SELECT uml_files.repository_id AS repo_id, file_id, type, author_id, date, commit_id FROM actions, uml_files, scmlog WHERE actions.file_id=uml_files.id AND scmlog.id=actions.commit_id AND (type='A' or type='M') ORDER BY uml_files.repository_id, file_id, date"
 
 umlfile_dict = defaultdict(list)
 umlfile_repo_dict = {}
