@@ -140,7 +140,7 @@ def umlstats(sql):
 
 #        number_dict[result['repo_id']] += 1
 
-    for repo_id in range(1, 1200):
+    for repo_id in range(1, 20000):
         author_list = tmp_dict[repo_id]
         c = Counter(author_list)
         number_dict[repo_id] = len(set(author_list))

@@ -63,7 +63,7 @@ while 1:
 markList = ['<', '>']
 
 for sign in markList:
-    for file_id in range(1, 7000000):
+    for file_id in range(1, 100000000):
         if file_id in umlfile_dict:
             repo_id = umlfile_repo_dict[file_id]
             for commit_id in umlfile_dates_dict[file_id]:
@@ -83,7 +83,7 @@ for sign in markList:
 with open('umlfiles_changes2_4images.csv', 'wt') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["#repo_id", "file_id", "total_days", "author_id", "uml_added_days", "commits_before", "commits_after", "author_id2", "uml_changed_days", "commits_before2", "commits_after2", "author_id3", "uml_changed_days", "commits_before3", "commits_after3", "author_id4", "uml_changed_days", "commits_before4", "commits_after4"])
-    for file_id in range(1, 7000000):
+    for file_id in range(1, 100000000):
         if file_id in umlfile_dict:
             total_days = finishingDict[umlfile_repo_dict[file_id]] - startingDict[umlfile_repo_dict[file_id]]
             writer.writerow([umlfile_repo_dict[file_id], file_id, total_days.days] + umlfile_dict[file_id])
