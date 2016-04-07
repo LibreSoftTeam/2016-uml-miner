@@ -18,14 +18,14 @@ connection = pymysql.connect(
 with open('updated.csv', 'r') as csvfile:
     for myupdatedCSV in csv.reader(csvfile):
         if myupdatedCSV == []:
-            continue 
-      
+            continue
+
         updatedCSV = myupdatedCSV[0].split('/')
         repo = updatedCSV[3] + "/" + updatedCSV[4]
         fileurl = myupdatedCSV[0]
         filename = fileurl.split('/')[-1]
         filepath = '/'.join(fileurl.split('/')[6:])
-        
+
         if 'https://raw.githubusercontent.com/' not in fileurl:
             continue
         # Get repo id from database

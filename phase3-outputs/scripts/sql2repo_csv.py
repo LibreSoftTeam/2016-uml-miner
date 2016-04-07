@@ -199,7 +199,7 @@ p, q, r, s = umlstats('SELECT uml_files.repository_id AS repo_id, file_id, type,
 
 # Send all to a CSV file
 
-with open('repo_stats2_4images.csv', 'wt') as csvfile:
+with open('repo_stats2.csv', 'wt') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["#id", "username", "repository", "committers", "authors", "age_days", "commits", "files", "main_lang", "number_langs", "bytes_main_lang", "bytes_total", "major_contrib", "number_contribs", "commits_major_contrib", "commits_total", "main_uml_author", "number_uml_authors", "changes_by_main_uml_author",
     "total_uml_changes"])

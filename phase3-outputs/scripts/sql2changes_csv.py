@@ -80,7 +80,7 @@ for sign in markList:
 
 
 # Send all to a CSV file
-with open('umlfiles_changes2_4images.csv', 'wt') as csvfile:
+with open('umlfiles_changes.csv', 'wt') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["#repo_id", "file_id", "total_days", "author_id", "uml_added_days", "commits_before", "commits_after", "author_id2", "uml_changed_days", "commits_before2", "commits_after2", "author_id3", "uml_changed_days", "commits_before3", "commits_after3", "author_id4", "uml_changed_days", "commits_before4", "commits_after4"])
     for file_id in range(1, 100000000):

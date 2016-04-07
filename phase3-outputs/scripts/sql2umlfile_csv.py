@@ -14,7 +14,7 @@ connection = pymysql.connect(
 host='localhost',
 user='operator',
 passwd='operator',
-db='chunk1_uml_xmi',
+db='uml1',
 charset='utf8mb4',
 cursorclass=pymysql.cursors.DictCursor)
 
@@ -70,7 +70,7 @@ def query(select, table, where='', group=''):
     return result
 
 
-with open('uml_files_1uml.csv', 'wt') as csvfile:
+with open('uml_files.csv', 'wt') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(["#uml_file, file_path, file_url, file_id, repo_id, repo_user, repo_name, author_id, author, commiter, modifications, repo_age, file_age, commits_before, commits_after"])
 
